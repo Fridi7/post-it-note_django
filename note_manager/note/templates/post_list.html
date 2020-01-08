@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+    <form method="POST" name="get_form" action="">
+    {% csrf_token %}
+      <div class="sidebar-nav-fixed affix">
+        <div class="well">
+
+          <select name="sort", id="sort">
+            <option value="-created">Дата(по убыванию)</option>
+            <option value="created">Дата(по возрастанию)</option>
+            <option value="-favourite">Избранное</option>
+            <option value="category">Категории</option>
+          </select>
+          <br><br>
+
+          <select name="filter", id="filter">
+            <option value="all">Все</option>
+            <option value="favourite">Избранное</option>
+            {% for obj in cat_list %}
+              <option value="c{{ obj }}">{{ obj }}</option>
+            {% endfor %}
+            {% for obj in date_list %}
+              <option value="{{ obj|date:"Y-m-d" }}">{{ obj }}</option>
+            {% endfor %}
+          </select>
+          <br><br>
+
+          <input type="text" name="query" id="query" placeholder="Поиск заметки"/>
+        
+        </div>
+      </div>
+    
+
+    <div id="list" class="col-sm-6 col-sm-offset-3">
+      {% include "filter_list.html" %}
+      
+
+    </div>
+    </form>
+
+{% endblock content %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block head_title %}{{ instance.title }} | {{ block.super }}{% endblock head_title %}
+
+
+{% block content %}
+
+<div class="col-sm-6 col-sm-offset-3">
+
+	<h1>{{ title }}</h1><br>
+	<h3>{{ instance.content }}</h3><br>
+	{% if instance.uuid_boolean %}
+	<a href="{% url 'note:publish' instance.unique_id %}">Доступна по ссылке</a><br>
+	{% endif %}
+	<small>Создано: {{ instance.created }}</small>
+	<p>Категория: {{ instance.category }}</p>
+
+	{% if instance.favourite %}
+		<p>Избранное</p><br>
+	{% endif %}
+	<a href="{{ instance.get_absolute_url }}edit">Изменить</a>
+	<a href="{{ instance.get_absolute_url }}delete">Удалить</a>
+	{% if instance.uuid_boolean %}
+	<a href="{% url 'note:publish_delete' instance.id %}">Отменить публикацию</a>
+	{% else %}
+	<a href="{{ instance.get_uuid_url }}">Опубликовать</a>
+	{% endif %}
+
+</div>
+
+{% endblock content %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block user_create %}
+
+	<div id="legend">
+      <legend class="">Регистрация</legend>
+    </div>
+
+	<div class="row"><div class="col-md-6 col-md-offset-1">
+		<form class="form-horizontal" action="/auth/user-create/" method="POST">
+			{% csrf_token %}
+
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label" for="username">Имя пользователя</label>
+					<div class="controls">
+						<input type="text" name="username" id="username" class="input-xlarge">
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label" for="email">Email</label>
+					<div class="controls">
+						<input type="text" name="email" id="email" class="input-xlarge">
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label" for="password">Пароль</label>
+					<div class="controls">
+						<input type="password" name="password" id="password" class="input-xlarge">
+					</div>
+				</div>
+				<br>
+
+				{% if creating_error %}
+					<label class="error">{{ creating_error }}</label><br>
+				{% endif %}
+				<input class="button" type="submit" value="Создать">
+			</fieldset>
+
+		</form>
+	</div></div>
+
+{% endblock user_create %}

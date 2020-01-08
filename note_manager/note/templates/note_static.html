@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+</head>
+<body>
+<div class="col-sm-6 col-sm-offset-3">
+
+	<h1>{{ instance.title }}</h1><br>
+	<h3>{{ instance.content }}</h3><br>
+	<small>Создано: {{ instance.created }}</small>
+	<p>Категория: {{ instance.category }}</p>
+
+	{% if instance.favourite %}
+		<p>Избранное</p><br>
+	{% endif %}
+	<input type="button" onclick="history.back();" value="Вернуться"/>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+      {% if object_list|length > 0 %}
+
+        {% for obj in object_list %}
+
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="thumbnail">
+                <div class="caption">
+                  <h3><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a></h3>
+                  <p>{{ obj.content|linebreaks|truncatechars:120 }}</p>
+                  <small>{{ obj.created }}</small>
+                  <p>Категория: {{ obj.category }}</p>
+                  {% if obj.favourite %}
+                    <p>Избранное</p>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <hr/>
+          </div>
+
+        {% endfor %}
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if object_list.has_previous %}
+                    <a href="?{{ page_request_var }}={{ object_list.previous_page_number }}{% if request.POST.query %}&query={{ request.POST.query }}{% endif %}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+                </span>
+
+                {% if object_list.has_next %}
+                    <a href="?{{ page_request_var }}={{ object_list.next_page_number }}{% if request.POST.query %}&query={{ request.POST.query }}{% endif %}">next</a>
+                {% endif %}
+            </span>
+        </div>
+      {% else %}
+        <p>Заметки не найдены</p>
+      {% endif %}
