@@ -40,6 +40,9 @@
       
 
     </div>
+    {% if user.is_authenticated %}
+        <footer>You have visited this page {{ num_visits }}{% if num_visits == 1 %} time{% else %} times{% endif %}</footer>
+    {% endif %}
     </form>
 
 {% endblock content %}

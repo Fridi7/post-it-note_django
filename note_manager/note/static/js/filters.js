@@ -39,6 +39,6 @@
       function filtersuccess(data){
             console.log("success");
             $('#list').html(data);
-      };
+      }
 
     });

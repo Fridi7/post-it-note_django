@@ -9,7 +9,7 @@
                   <h3><a href="{{ obj.get_absolute_url }}">{{ obj.title }}</a></h3>
                   <p>{{ obj.content|linebreaks|truncatechars:120 }}</p>
                   <small>{{ obj.created }}</small>
-                  <p>Категория: {{ obj.category }}</p>
+                  <p>Категория: {{ obj.get_category_display }}</p>
                   {% if obj.favourite %}
                     <p>Избранное</p>
                   {% endif %}

@@ -1,10 +1,7 @@
-# coding: utf-8
-
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.contrib import messages, auth
+from django.http import HttpResponseRedirect
+from django.contrib import auth
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
 from django.template.context_processors import csrf
 
 
@@ -35,7 +32,7 @@ def login(request):
         user = auth.authenticate(username=username, password=password)
         if user is not None:
             auth.login(request, user)
-            return HttpResponseRedirect("/note") #/login
+            return HttpResponseRedirect("/note")
         else:
             context["login_error"] = "Пользователь не найден"
             return render(request, "login.html", context)
@@ -45,6 +42,4 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    #return HttpResponseRedirect("note:list") #/login
-    #return render(request, "login.html")
     return HttpResponseRedirect("/note")

@@ -13,7 +13,7 @@
 	<a href="{% url 'note:publish' instance.unique_id %}">Доступна по ссылке</a><br>
 	{% endif %}
 	<small>Создано: {{ instance.created }}</small>
-	<p>Категория: {{ instance.category }}</p>
+	<p>Категория: {{ instance.get_category_display }}</p>
 
 	{% if instance.favourite %}
 		<p>Избранное</p><br>

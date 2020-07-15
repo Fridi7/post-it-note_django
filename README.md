@@ -1,15 +1,16 @@
-# post-it-note_django
+# post-it-note django 
 Web application for storing notes
 
 ## Setup
-### Install Django:
-    pip install Django==3.0.2
-### Perform database migration:
+#### Install requirements:
+    pip install -r requirements.txt
+#### Perform database migration:
     cd note_manager/
-    python manage.py check
     python manage.py migrate
-### Create superuser:
-    python manage.py createsuperuser
+#### Create superuser:
+    python manage.py createsuperuser   
+#### Run tests
+    python manage.py test
 ## Run Development Server
     python manage.py runserver
 

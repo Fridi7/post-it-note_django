@@ -1,13 +1,17 @@
-import uuid, logging
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse, Http404, HttpResponseRedirect
-from .models import Post
-from django.contrib import messages, auth
-from .forms import PostForm
-from django.template.context_processors import csrf
+from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
+from django.template.context_processors import csrf
+
+from .forms import PostForm
+from .models import Post
+
+
+#  наверно было бы классно еще сделать список опубликованных заметок
+
 
 def post_create(request):
     if not request.user.is_authenticated:
@@ -27,21 +31,28 @@ def post_create(request):
     return render(request, "post_form.html", context)
 
 
-def post_detail(request, id=None): ###############, id=None
+def post_detail(request, id=None):
     instance = get_object_or_404(Post, id=id)
-    #instance = get_object_or_404(Post, id=request.POST.get('id', ''))
-    context = {
-        "title": instance.title,
-        "instance": instance,
-    }
-    return render(request, "post_detail.html", context)
+    if instance.user == request.user:
+        # проверка на то, доступна ли заметка пользователю (если он ее не создавал, то нельзя показывать)
+        context = {
+            "title": instance.title,
+            "instance": instance,
+        }
+        return render(request, "post_detail.html", context)
+    else:
+        raise Http404
 
 
 def post_list(request):
     if not request.user.is_active:
-        return render(request, "post_list.html")  # need to fixed
+        return render(request, "post_list.html")
     else:
         context = {}
+        # Количество посещений этого представления, полученное из переменной сессии
+        num_visits = request.session.get('num_visits', 0)
+        request.session['num_visits'] = num_visits + 1
+
         context.update(csrf(request))
         fname = request.POST.get('filter')
         sname = request.POST.get('sort')
@@ -91,7 +102,8 @@ def post_list(request):
             "object_list": queryset,
             "sort": sname,
             "filter": fname,
-            "page_request_var": page_request_var
+            "page_request_var": page_request_var,
+            'num_visits': num_visits
         }
         return render(request, "post_list.html", context)
 
@@ -101,20 +113,13 @@ def post_update(request, id=None):
         raise Http404
 
     instance = get_object_or_404(Post, id=id)
-
-    messages.success(request, str(instance.get_absolute_url()))
-    messages.success(request, str(str(instance) + '-instance'))
     form = PostForm(request.POST or None,
                     request.FILES or None, instance=instance)
     if form.is_valid():
         instance = form.save(commit=False)
         instance.save()
         messages.success(request, "Заметка успешно сохранена")
-        link = 'http://127.0.0.1:8000'+str(instance.get_absolute_url())
-        messages.success(request, str(link))
         return HttpResponseRedirect(instance.get_absolute_url())
-        # return HttpResponseRedirect(uuid.uuid3(uuid.NAMESPACE_URL, str(link)))
-
 
     context = {
         "title": instance.title,
@@ -173,28 +178,17 @@ def filter_list(request):
         "object_list": queryset,
         "page_request_var": page_request_var
     }
-    # return render_to_response("filter_list.html", context)
-    return render("filter_list.html", context)
+    return render(request, "filter_list.html", context)
 
 
 def post_publish(request, unique_id):
     if not request.user.is_authenticated:
         raise Http404
-    messages.success(request, 'вход в функцию p')
     instance = get_object_or_404(Post, unique_id=unique_id)
-    messages.success(request, str(instance.get_uuid_url()))
-    messages.success(request, str(str(instance) + '-instance'))
-
-    # form = PostForm(request.POST or None,
-    #                 request.FILES or None, instance=instance)
     if instance.uuid_boolean == 0:
         instance.uuid_boolean = 1
         instance.save()
-        messages.success(request, "поменяли бул")
-    #instance = form.save(commit=False)
-
-    messages.success(request, str(str(instance.uuid_boolean) + '-bool'))
-    messages.success(request, "Заметка успешно опубликована")
+        messages.success(request, "Заметка успешно опубликована")
     context = {
         "instance": instance
     }
@@ -205,54 +199,8 @@ def post_publish(request, unique_id):
 def publish_delete(request, id=None):
     if not request.user.is_authenticated:
         raise Http404
-    messages.success(request, 'вход в функцию d')
     instance = get_object_or_404(Post, id=id)
-    messages.success(request, str(str(instance) + '-instance'))
-
     instance.uuid_boolean = 0
     instance.save()
     messages.success(request, "Публикация успешно удалена")
     return HttpResponseRedirect(instance.get_absolute_url())
-
-#
-# def post_publish(request, unique_id):
-#     if not request.user.is_authenticated:
-#         raise Http404
-#     messages.success(request, 'вход в функцию')
-#     instance = get_object_or_404(Post, unique_id=unique_id)
-#     messages.success(request, str(instance.get_uuid_url()))
-#     messages.success(request, str(str(instance) + '-instance'))
-#
-#     form = PostForm(request.POST or None,
-#                     request.FILES or None, instance=instance)
-#     # if form.is_valid(): #с if not можно псмотерть работу
-#     #     instance.uuid_boolean = 1
-#     #     instance = form.save(commit=False)
-#     #     instance.save()
-#     #     messages.success(request, "Заметка успешно опубликована")
-#     #     messages.success(request, str(str(instance.uuid_boolean) + '-instance'))
-#     #     # messages.success(request, "Successfully published on link: " + str(instance) + str(test))
-#     #     return HttpResponseRedirect(instance.get_uuid_url())
-#     if instance.uuid_boolean == 1:
-#         instance.uuid_boolean = 0
-#         instance = form.save(commit=False)
-#         instance.save()
-#         messages.success(request, "Публикация успешно удалена")
-#         #return render(request, "post_detail.html", context)
-#         return HttpResponseRedirect(instance.get_absolute_url())
-#
-#     elif instance.uuid_boolean == 0:
-#         instance.uuid_boolean = 1
-#         messages.success(request, "Заметка успешно опубликована")
-#         instance = form.save(commit=False)
-#         instance.save()
-#
-#         messages.success(request, str(str(instance.uuid_boolean) + '-bool'))
-#
-#         context = {
-#             "instance": instance
-#         }
-#         # return render(request, "post_form.html", context)
-#         template = loader.get_template('note_static.html')
-#         return HttpResponse(template.render(context, request))
-#
